@@ -1,14 +1,28 @@
 "use client"
 import Image from "next/image";
 import { Canvas } from "@react-three/fiber";
-import { RoundedBox, CameraControls, Environment, useGLTF, ContactShadows } from "@react-three/drei";
+import { RoundedBox, CameraControls, Environment, useGLTF, ContactShadows, PerspectiveCamera } from "@react-three/drei";
 import { Suspense } from "react";
+import { useRef } from "react";
+
+
+function ClawModel() {
+  const clawModel = useGLTF("claw2.glb");
+  return (<>
+    <primitive
+      object={clawModel.scene}
+      scale={[0.6, 0.6, 0.6]}
+      position={[0, 0, 0]}
+      rotation={[0, 0, 0]}
+    />
+  </>)
+}
 
 export default function Home() {
 
   const isHidden = true; //這裡只是要把原本的RoundedBox隱藏而已
 
-  const clawModel = useGLTF("claw.glb");
+  const cameraRef = useRef();
 
 
 
@@ -32,14 +46,9 @@ export default function Home() {
           </RoundedBox>
         }
 
-
+        {/* 載入前不要出現 */}
         <Suspense fallback={null}>
-          <primitive
-            object={clawModel.scene}
-            scale={[0.6, 0.6, 0.6]}
-            position={[0, 0, 0]}
-            rotation={[0, 0, 0]}
-          />
+          <ClawModel />
         </Suspense>
 
 
@@ -53,8 +62,14 @@ export default function Home() {
 
         <ContactShadows opacity={1} scale={10} blur={10} far={10} resolution={256} color="#DDDDDD" />
 
-
+        {/* 鏡頭控制 */}
         <CameraControls />
+
+        {/* 建立鏡頭：透視相機（一般世界） */}
+        <PerspectiveCamera
+          ref={cameraRef}
+          makeDefault
+          position={[0, 1, 3]} />
 
 
       </Canvas>
