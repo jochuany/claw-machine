@@ -1,15 +1,44 @@
 "use client"
 import Image from "next/image";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import {
   RoundedBox, CameraControls, Environment, useGLTF, ContactShadows,
   axesHelper, KeyboardControls, useKeyboardControls, Box
 } from "@react-three/drei";
-import { Suspense, useState } from "react";
+import { Suspense, useState, useRef } from "react";
 import ClawCamera from "@/component/ClawCamera";
 
-function ClawModel({ clawPos }) {
+function ClawModel({ clawPos, isClawDown }) {
   const clawModel = useGLTF("claw2.glb");
+
+
+  const clawRef = useRef();
+
+  useFrame(() => {
+    if (clawRef.current) {
+      clawRef.current.traverse(() => {
+
+        if (child.name == "claw") {
+          child.position.set(clawPos.x, clawPos.y + 2.85, clawPos.z);
+        }
+
+        if (child.name == "clawBase") {
+          child.position.set(clawPos.x, clawPos.y + 2.85, clawPos.z);
+        }
+
+
+        if (child.name == "track") {
+          child.position.set(clawPos.x, clawPos.y + 2.85, clawPos.z);
+        }
+
+        // 這裡還要補，現在整台都在動，應該要抓到爪子
+
+      });
+
+    }
+  })
+
+
   return (<>
     <primitive
       object={clawModel.scene}
@@ -25,7 +54,7 @@ export default function Home() {
   const isHidden = true; //這裡只是要把原本的RoundedBox隱藏而已
 
   const [clawPos, setClawPos] = useState({ x: 0, y: 0, z: 0 });
-
+  const [isClawDown, setIsClawDown] = useState(false);
 
   return (
     <div className="w-full h-screen">
@@ -64,7 +93,7 @@ export default function Home() {
 
           {/* 載入前不要出現 */}
           <Suspense fallback={null}>
-            <ClawModel clawPos={clawPos} />
+            <ClawModel clawPos={clawPos} isClawDown={isClawDown} />
           </Suspense>
 
 
@@ -79,7 +108,7 @@ export default function Home() {
           <ContactShadows opacity={1} scale={10} blur={10} far={10} resolution={256} color="#DDDDDD" />
 
           {/* 匯入透視相機（在 component 中） */}
-          <ClawCamera setClawPos={setClawPos} clawPos={clawPos} />
+          <ClawCamera setClawPos={setClawPos} clawPos={clawPos} isClawDown={isClawDown} setIsClawDown={setIsClawDown} />
 
           {/* 鏡頭控制 */}
           <CameraControls />

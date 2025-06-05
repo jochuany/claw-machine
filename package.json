@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@react-three/drei": "^10.0.8",
     "@react-three/fiber": "^9.1.2",
     "firebase": "^11.8.1",
